@@ -3,10 +3,7 @@ package jm.task.core.jdbc.dao;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLSyntaxErrorException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,12 +39,14 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void saveUser(String name, String lastName, byte age) {
         Util util = new Util();
-        Statement stat = util.getStatement();
-        String query = String.format("insert into users (name, lastName, age) values ('%s', '%s', '%s')",
-                name, lastName, age);
+        String query = "insert into users (name, lastName, age) values (?, ?, ?)";
         try {
-            stat.execute(query);
-            stat.getConnection().close();
+            PreparedStatement preparedStatement = util.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
+            preparedStatement.executeUpdate();
+            preparedStatement.getConnection().close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -55,11 +54,12 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void removeUserById(long id) {
         Util util = new Util();
-        Statement stat = util.getStatement();
-        String query = String.format("delete from Users where id = %s", id);
+        String query = "delete from Users where id = ?";
         try {
-            stat.execute(query);
-            stat.getConnection().close();
+            PreparedStatement preparedStatement = util.prepareStatement(query);
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.getConnection().close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -67,18 +67,18 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public List<User> getAllUsers() {
         Util util = new Util();
-        Statement stat = util.getStatement();
         List<User> usersList = new ArrayList<>();
         String query = "select * from Users";
         try {
-            ResultSet rs = stat.executeQuery(query);
+            PreparedStatement preparedStatement = util.prepareStatement(query);
+            ResultSet rs = preparedStatement.executeQuery();
                 while (rs.next()) {
                     User user = new User(rs.getString("name"),
                             rs.getString("lastName"), rs.getByte("age"));
                     usersList.add(user);
                 }
 
-            stat.getConnection().close();
+            preparedStatement.getConnection().close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -87,11 +87,11 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable() {
         Util util = new Util();
-        Statement stat = util.getStatement();
         String query = "truncate table Users";
         try {
-            stat.execute(query);
-            stat.getConnection().close();
+            PreparedStatement preparedStatement = util.prepareStatement(query);
+            preparedStatement.executeUpdate();
+            preparedStatement.getConnection().close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

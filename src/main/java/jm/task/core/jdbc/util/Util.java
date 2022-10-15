@@ -1,9 +1,6 @@
 package jm.task.core.jdbc.util;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Util {
     public Connection getConnection () {
@@ -24,6 +21,16 @@ public class Util {
             throw new RuntimeException(e);
         }
         return statement;
+    }
+
+    public PreparedStatement prepareStatement(String sql) {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = getConnection().prepareStatement(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return preparedStatement;
     }
 }
 
