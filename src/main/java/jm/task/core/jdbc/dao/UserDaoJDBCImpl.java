@@ -14,12 +14,12 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void createUsersTable() {
         Util util = new Util();
-        Statement stat = util.getStatement();
         String query = "create table IF NOT EXISTS Users (id bigint primary key auto_increment, " +
                 "name varchar(255), lastName varchar(255), age int)";
         try {
-            stat.execute(query);
-            stat.getConnection().close();
+            PreparedStatement preparedStatement = util.prepareStatement(query);
+            preparedStatement.executeUpdate();
+            preparedStatement.getConnection().close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -27,11 +27,11 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void dropUsersTable() {
         Util util = new Util();
-        Statement stat = util.getStatement();
         String query = "drop table IF EXISTS Users";
         try {
-            stat.execute(query);
-            stat.getConnection().close();
+            PreparedStatement preparedStatement = util.prepareStatement(query);
+            preparedStatement.executeUpdate();
+            preparedStatement.getConnection().close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
