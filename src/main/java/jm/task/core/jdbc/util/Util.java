@@ -13,15 +13,6 @@ public class Util {
         return connection;
     }
 
-    public Statement getStatement() {
-        Statement statement = null;
-        try {
-            statement = getConnection().createStatement();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return statement;
-    }
 
     public PreparedStatement prepareStatement(String sql) {
         PreparedStatement preparedStatement = null;
